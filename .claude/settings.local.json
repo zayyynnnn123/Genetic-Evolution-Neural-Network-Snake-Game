@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(pip show *)",
+      "Bash(python plot_training.py)",
+      "Bash(pip install *)",
+      "Bash(python *)",
+      "Bash(c:/python314/python.exe \"d:/AI project/snake_ai/plot_training.py\")"
+    ]
+  }
+}
