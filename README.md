@@ -1,3 +1,7 @@
+#VIDEO:
+https://youtu.be/W2reMDvzU_A
+
+
 # Genetic Evolution Neural Network — Snake Game
 
 A neuroevolution project that trains feedforward neural networks to play Snake using a custom **Genetic Algorithm (GA)** and compares it against **NEAT** (NeuroEvolution of Augmenting Topologies). The neural network is built entirely from scratch in Python — no PyTorch, no TensorFlow.
