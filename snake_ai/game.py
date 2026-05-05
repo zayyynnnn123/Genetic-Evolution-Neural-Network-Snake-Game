@@ -115,10 +115,10 @@ class SnakeGame:
             # Food location relative to head
             int(self.food.x < h.x),   # food left
             int(self.food.x > h.x),   # food right
-            int(self.food.y < h.y),   # food above  (y-axis: 0 = top)
+            int(self.food.y < h.y),   # food above  
             int(self.food.y > h.y),   # food below
         ]
-        return state  # list of 11 ints (0 or 1)
+        return state  # list of 11 intsssss
 
     def step(self, action):
         """
@@ -131,13 +131,13 @@ class SnakeGame:
         if self.do_render:
             self._handle_events()
 
-        # Update direction
+        # Update direction!!~
         if action == 1:
             self.direction = _turn_right(self.direction)
         elif action == 2:
             self.direction = _turn_left(self.direction)
 
-        # Advance head
+       
         self.head = _move_point(self.head, self.direction)
         self.snake.appendleft(self.head)
 
@@ -156,7 +156,7 @@ class SnakeGame:
             self.snake.pop()
             reward = -0.1
 
-        # Step-limit guard: prevents infinite circling
+        #prevents infinite loop
         if self.steps > 200 * len(self.snake):
             if self.do_render:
                 self._draw(self.overlay)
@@ -173,7 +173,7 @@ class SnakeGame:
         if pt.x < 0 or pt.x >= self.w or pt.y < 0 or pt.y >= self.h:
             return True
         snake_list = list(self.snake)
-        return pt in set(snake_list[1:]) # still O(n) build but O(1) lookup
+        return pt in set(snake_list[1:]) 
 
     def _place_food(self):
         snake_set = set(self.snake)
@@ -194,7 +194,7 @@ class SnakeGame:
     def _draw(self, overlay=None):
         self.screen.fill(BLACK)
 
-        # Subtle grid
+        # grid
         for x in range(0, self.w, BLOCK):
             pygame.draw.line(self.screen, GRAY, (x, 0), (x, self.h))
         for y in range(0, self.h, BLOCK):
@@ -223,7 +223,6 @@ class SnakeGame:
             f'Score: {self.score}   Steps: {self.steps}', True, WHITE)
         self.screen.blit(score_txt, (5, 5))
 
-        # Optional AI overlay (dict passed from train loop)
         if overlay:
             lines = [
                 f"Gen: {overlay.get('gen', '-')}",
@@ -247,7 +246,7 @@ def _direction_to_action(current: Direction, intended: Direction) -> int:
         return 1   # turn right
     if diff == 3:
         return 2   # turn left
-    return 0       # straight (or 180° → treat as straight)
+    return 0       # straight 
 
 
 def human_play():

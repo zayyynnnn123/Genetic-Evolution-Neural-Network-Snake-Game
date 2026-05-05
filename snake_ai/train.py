@@ -10,13 +10,13 @@ from visualizer import show_grid
 POP_SIZE      = 150
 GENERATIONS   = 180
 ELITE_FRAC    = 0.10   # top 10% copied unchanged each gen
-MUTATION_RATE = 0.15   # per-weight probability of mutation
+MUTATION_RATE = 0.15   # per weight probability of mutation
 MUTATION_STR  = 0.20   # std of gausian noise applied
 LAYER_SIZES   = [11, 16, 3]
 SAVE_PATH     = "best_snake.pkl"
 LOG_PATH      = "training_log.csv"
-RENDER_EVERY  = 5      # show best agent live every N gens (0 = never)
-RENDER_SPEED  = 4000   # fps during live preview!
+RENDER_EVERY  = 5      # show best agent live every N gens
+RENDER_SPEED  = 4000   # fps during live preview!!!
 
 
 
