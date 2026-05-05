@@ -1,18 +1,3 @@
-"""
-neat_compare.py
-Experiment 5 — NEAT comparison baseline for the Snake neuroevolution project.
-
-Trains a NEAT agent using neat-python for 180 generations with pop_size=150,
-the same fitness function as the GA, and the same 11-input / 3-output interface.
-Unlike the fixed-topology GA, NEAT starts with no hidden nodes and evolves
-both weights AND topology (add/remove nodes and connections) via speciation.
-
-Logs results to neat_training_log.csv — same columns as training_log.csv plus
-three NEAT-specific columns: num_species, avg_nodes, avg_connections.
-
-Run from snake_ai/:
-    python neat_compare.py
-"""
 
 import os
 import csv
@@ -38,7 +23,6 @@ LOG_PATH     = os.path.join(_DIR, "neat_training_log.csv")
 
 
 class _NetWrapper:
-    """Wraps a neat FeedForwardNetwork to match the .predict() interface show_grid expects."""
     def __init__(self, net):
         self._net = net
 
@@ -47,17 +31,12 @@ class _NetWrapper:
 
 
 def _fitness(score: int, steps: int) -> float:
-    """Same formula as train.py so results are directly comparable."""
+
     return score * 100 + steps * 0.1
 
 
 # ── Genome evaluation ─────────────────────────────────────────────────────────
 def eval_genomes(genomes, config):
-    """
-    Evaluate every genome in the population for one generation.
-    Sets genome.fitness (required by neat-python) and genome.score
-    (food eaten — used by the reporter to log the raw game metric).
-    """
     for _genome_id, genome in genomes:
         net   = neat.nn.FeedForwardNetwork.create(genome, config)
         game  = SnakeGame(render=False)
@@ -74,11 +53,7 @@ def eval_genomes(genomes, config):
 
 # ── Per-generation reporter ───────────────────────────────────────────────────
 class _NeatLogger(_BaseReporter):
-    """
-    Logs one CSV row per generation and prints a summary line that mirrors
-    the format used by train.py so the two outputs can be compared directly.
-    Also saves best_neat.pkl whenever a new all-time best is found.
-    """
+
 
     def __init__(self, config):
         self._gen          = 0
@@ -93,7 +68,7 @@ class _NeatLogger(_BaseReporter):
             "alltime_best", "num_species", "avg_nodes", "avg_connections",
         ])
 
-    # ── neat-python reporter hooks ────────────────────────────────────────────
+    # neat python reporter hooks 
 
     def start_generation(self, generation):
         self._gen = generation
@@ -104,7 +79,7 @@ class _NeatLogger(_BaseReporter):
         avg_fit   = float(np.mean(fits))
         best_score = int(getattr(best_genome, "score", 0))
 
-        # NEAT-specific topology stats
+        # NEAT specific topology stats
         n_species = len(species.species)
         avg_nodes = float(np.mean([len(g.nodes) for g in population.values()]))
         avg_conns = float(np.mean([
@@ -112,7 +87,7 @@ class _NeatLogger(_BaseReporter):
             for g in population.values()
         ]))
 
-        # build wrappers for top-5 genomes this generation
+      
         sorted_genomes = sorted(population.values(), key=lambda g: g.fitness, reverse=True)
         self._top5_nns = [
             _NetWrapper(neat.nn.FeedForwardNetwork.create(g, self._config))

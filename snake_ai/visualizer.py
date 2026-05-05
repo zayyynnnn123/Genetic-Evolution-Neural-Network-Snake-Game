@@ -6,8 +6,8 @@ CELL   = 240                       # each mini-game is 240×240 px
 WIN_W  = COLS * CELL               # 720
 WIN_H  = ROWS * CELL + 30          # 480 + status bar
 
-SCALE = CELL / 480                 # 0.5 — game coords → cell coords
-SB    = max(1, int(BLOCK * SCALE)) # 10  — scaled block size
+SCALE = CELL / 480                 # 0.5  game coords → cell coords
+SB    = max(1, int(BLOCK * SCALE)) # 10   scaled block size
 
 GOLD        = (255, 200, 50)
 DIM_HEAD    = (30,  80,  30)

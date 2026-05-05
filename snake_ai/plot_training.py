@@ -1,11 +1,4 @@
-"""
-plot_training.py
-Generates all research analysis figures for the Snake neuroevolution project.
-Reads training_log.csv if present (written by train.py); falls back to embedded data.
 
-Run from snake_ai/:   python plot_training.py
-Output:               plots/fig1_fitness_curves.png  … fig6_combined_overview.png
-"""
 
 import os
 import csv
@@ -15,7 +8,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-# ── Global style ──────────────────────────────────────────────────────────────
 plt.rcParams.update({
     "figure.dpi": 150,
     "font.size": 10,
@@ -30,18 +22,17 @@ plt.rcParams.update({
     "legend.framealpha": 0.75,
 })
 
-C_BEST  = "#1976D2"   # blue  – best fitness per gen
-C_AVG   = "#F57C00"   # amber – mean fitness per gen
-C_ALLTIME = "#388E3C" # green – all-time best
-C_SCORE = "#6A1B9A"   # purple – score
-C_RAND  = "#D32F2F"   # red   – random baseline
-C_NEAT  = "#00838F"   # teal  – NEAT placeholder
+C_BEST  = "#1976D2"   # blue   best fitness per gen
+C_AVG   = "#F57C00"   # amber mean fitness per gen
+C_ALLTIME = "#388E3C" # green all-time best
+C_SCORE = "#6A1B9A"   # purple  score
+C_RAND  = "#D32F2F"   # red    random baseline
+C_NEAT  = "#00838F"   # teal   NEAT placeholder
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PLOTS_DIR = os.path.join(_SCRIPT_DIR, "plots")
 os.makedirs(PLOTS_DIR, exist_ok=True)
 
-# ── Embedded data (Experiment 1 — baseline run, pop=150, 180 gens) ────────────
 _EMBEDDED = [
     (1,113.2,30.4,1,113.2),(2,202.6,40.4,2,202.6),(3,105.4,45.4,1,202.6),
     (4,114.3,40.8,1,202.6),(5,203.9,43.3,2,203.9),(6,109.1,39.9,1,203.9),
@@ -105,7 +96,6 @@ _EMBEDDED = [
     (178,24909.1,7494.0,217,29571.2),(179,26355.8,7349.2,230,29571.2),(180,26669.6,7910.2,233,29571.2),
 ]
 
-# ── Load data ─────────────────────────────────────────────────────────────────
 def _load_csv(path):
     rows = []
     with open(path, newline="") as f:
@@ -127,7 +117,7 @@ avg_fit     = np.array([r[2] for r in _raw])
 best_score  = np.array([r[3] for r in _raw])
 alltime_fit = np.array([r[4] for r in _raw])
 
-W = 7  # moving-average window
+W = 7 
 
 def _mavg(arr, w=W):
     return np.convolve(arr, np.ones(w) / w, mode="valid")
@@ -137,7 +127,7 @@ ma_best  = _mavg(best_fit)
 ma_avg   = _mavg(avg_fit)
 ma_score = _mavg(best_score.astype(float))
 
-# NEAT arrays — populated only when neat_training_log.csv is present
+# NEAT arrays populated only when neat_training_log.csv is present
 if _neat_raw is not None:
     neat_gens       = np.array([r[0] for r in _neat_raw])
     neat_best_fit   = np.array([r[1] for r in _neat_raw])
@@ -152,7 +142,6 @@ else:
     neat_gens = neat_best_fit = neat_avg_fit = neat_best_score = neat_alltime = None
     neat_ma_gens = neat_ma_best = neat_ma_avg = neat_ma_score = None
 
-# ── Key breakthrough annotations (gen, fitness_val, label, text_offset_x) ────
 BREAKTHROUGHS = [
     (48,  1352.0,  "Score 13",  3),
     (73,  4169.3,  "Score 40",  3),
@@ -162,13 +151,10 @@ BREAKTHROUGHS = [
 ]
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 1 — Fitness Learning Curves (best + mean, two panels)
-# ─────────────────────────────────────────────────────────────────────────────
 def fig1_fitness_curves():
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(11, 7), sharex=True)
 
-    # — Panel A: best fitness per generation —
+    #  Panel A best fitness per generation 
     ax1.plot(gens, best_fit, color=C_BEST, alpha=0.22, lw=1)
     ax1.plot(ma_gens, ma_best, color=C_BEST, lw=2.2, label=f"GA best fitness ({W}-gen avg)")
     ax1.plot(gens, alltime_fit, color=C_ALLTIME, lw=1.8, ls="--", label="GA all-time best")
@@ -192,7 +178,7 @@ def fig1_fitness_curves():
                      fontsize=7.5, color="#333",
                      arrowprops=dict(arrowstyle="->", color="#aaa", lw=0.8))
 
-    # — Panel B: mean fitness per generation —
+    # Panel B mean fitness per generation 
     ax2.plot(gens, avg_fit, color=C_AVG, alpha=0.22, lw=1)
     ax2.plot(ma_gens, ma_avg, color=C_AVG, lw=2.2, label=f"GA mean fitness ({W}-gen avg)")
     ax2.fill_between(gens, avg_fit, alpha=0.06, color=C_AVG)
@@ -216,9 +202,6 @@ def fig1_fitness_curves():
     print(f"  [ok] {path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 2 — Score (food eaten) progression
-# ─────────────────────────────────────────────────────────────────────────────
 def fig2_score_progression():
     fig, ax = plt.subplots(figsize=(11, 5))
 
@@ -235,12 +218,10 @@ def fig2_score_progression():
         ax.text(0.98, 0.04, "NEAT pending", transform=ax.transAxes,
                 ha="right", fontsize=8, color=C_NEAT, alpha=0.65)
 
-    # Horizontal milestone guides
     for threshold in [10, 25, 50, 100, 150, 200, 250]:
         ax.axhline(threshold, color="#ccc", ls="--", lw=0.8)
         ax.text(182, threshold + 1.5, str(threshold), fontsize=7, color="#888", va="bottom")
 
-    # Annotate first time each big milestone was crossed (GA)
     for t, lbl in [(50, "50"), (100, "100"), (200, "200")]:
         idx = int(np.argmax(best_score >= t))
         if best_score[idx] >= t:
@@ -262,10 +243,6 @@ def fig2_score_progression():
     plt.close()
     print(f"  [ok] {path}")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 3 — All-time best score records (staircase)
-# ─────────────────────────────────────────────────────────────────────────────
 def fig3_alltime_records():
     # Build the staircase of when new records were set
     rec_gens, rec_scores = [], []
@@ -276,7 +253,6 @@ def fig3_alltime_records():
             rec_gens.append(g)
             rec_scores.append(s)
 
-    # Extend to end of run
     plot_g = rec_gens + [gens[-1] + 1]
     plot_s = rec_scores + [rec_scores[-1]]
 
@@ -321,19 +297,13 @@ def fig3_alltime_records():
     print(f"  [ok] {path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 4 — Final performance bar chart: GA vs Random vs NEAT
-# ─────────────────────────────────────────────────────────────────────────────
 def fig4_final_comparison():
-    # GA stats from this run
     ga_best      = int(np.max(best_score))
     ga_avg_final = float(np.mean(best_score[-10:]))
 
-    # Random baseline
     rand_best = 2
     rand_avg  = 0.3
 
-    # NEAT stats — real data when available, else placeholder
     if _neat_raw is not None:
         neat_scores  = np.array([r[3] for r in _neat_raw])
         neat_best    = int(np.max(neat_scores))
@@ -354,7 +324,7 @@ def fig4_final_comparison():
 
     fig, ax = plt.subplots(figsize=(9, 5.5))
 
-    # Best-score bars
+    # Best score bars
     for i, (bv, c) in enumerate(zip(best_vals, clr)):
         if bv is not None:
             ax.bar(x[i] - w / 2, bv, w, color=c, alpha=0.88,
@@ -362,7 +332,7 @@ def fig4_final_comparison():
             ax.text(x[i] - w / 2, bv + 3, str(int(bv)),
                     ha="center", va="bottom", fontsize=9, fontweight="bold")
 
-    # Avg-score bars
+    # Avg score bars
     for i, (av, c) in enumerate(zip(avg_vals, clr)):
         if av is not None:
             ax.bar(x[i] + w / 2, av, w, color=c, alpha=0.42,
@@ -400,10 +370,6 @@ def fig4_final_comparison():
     plt.close()
     print(f"  [ok] {path}")
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 5 — Convergence speed: generations to first reach score thresholds
-# ─────────────────────────────────────────────────────────────────────────────
 def fig5_convergence_milestones():
     thresholds = [5, 10, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]
 
@@ -467,9 +433,6 @@ def fig5_convergence_milestones():
     print(f"  [ok] {path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Fig 6 — Combined 2×3 overview panel
-# ─────────────────────────────────────────────────────────────────────────────
 def fig6_combined_overview():
     fig = plt.figure(figsize=(15, 9))
     gs  = GridSpec(2, 3, figure=fig, hspace=0.45, wspace=0.38)
@@ -521,7 +484,6 @@ def fig6_combined_overview():
     ax3.set_ylabel("Food Eaten")
     ax3.set_xlabel("Generation")
 
-    # D — convergence milestones (grouped bars: GA vs NEAT)
     ax4 = fig.add_subplot(gs[1, 2])
     thr = [5, 10, 25, 50, 100, 150, 200, 250]
     fg_ga = []
@@ -562,7 +524,6 @@ def fig6_combined_overview():
     print(f"  [ok] {path}")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print(f"Loaded {len(_raw)} generations of data.")
     print("Generating figures...\n")
